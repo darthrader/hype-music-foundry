@@ -1,0 +1,41 @@
+name: Release Creation
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Update module.json with release info
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          sed -i "s|\"version\":.*|\"version\": \"$VERSION\",|" module.json
+          sed -i "s|\"download\":.*|\"download\": \"https://github.com/${{ github.repository }}/releases/download/$VERSION/module.zip\",|" module.json
+          sed -i "s|\"manifest\":.*|\"manifest\": \"https://github.com/${{ github.repository }}/releases/download/$VERSION/module.json\"|" module.json
+
+      - name: Create module zip
+        run: zip -r module.zip lang/ scripts/ styles/ templates/ module.json README.md
+
+      - name: Upload module.json to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./module.json
+          asset_name: module.json
+          asset_content_type: application/json
+
+      - name: Upload module.zip to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./module.zip
+          asset_name: module.zip
+          asset_content_type: application/zip

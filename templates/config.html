@@ -1,0 +1,57 @@
+<form class="hype-music-config">
+  <div class="form-group">
+    <p class="notes">Configure which hype music track plays when each player's turn begins in combat. Tracks must be added to playlists first.</p>
+  </div>
+
+  {{#if actors.length}}
+    <table class="hype-music-table">
+      <thead>
+        <tr>
+          <th>{{localize "HYPEMUSIC.ActorLabel"}}</th>
+          <th>{{localize "HYPEMUSIC.TrackLabel"}}</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each actors}}
+        <tr>
+          <td class="actor-info">
+            <img src="{{this.img}}" alt="{{this.name}}" />
+            <span>{{this.name}}</span>
+          </td>
+          <td>
+            <select name="track-{{this.id}}" class="track-select">
+              <option value="">{{localize "HYPEMUSIC.NoTrack"}}</option>
+              {{#each ../tracks}}
+                <option value='{"id":"{{this.id}}","name":"{{this.name}}","path":"{{this.path}}","playlistId":"{{this.playlistId}}"}' 
+                  {{#if (eq this.id ../../hypeTrack.id)}}selected{{/if}}>
+                  {{this.name}}
+                </option>
+              {{/each}}
+            </select>
+          </td>
+          <td class="actions">
+            <button type="button" class="play-preview" title="Preview Track">
+              <i class="fas fa-play"></i>
+            </button>
+            <button type="button" class="clear-track" data-actor-id="{{this.id}}" title="{{localize 'HYPEMUSIC.ClearTrack'}}">
+              <i class="fas fa-times"></i>
+            </button>
+          </td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  {{else}}
+    <p class="notification warning">No player-owned actors found. Assign ownership to actors first.</p>
+  {{/if}}
+
+  <footer class="sheet-footer">
+    <button type="submit" name="submit">
+      <i class="fas fa-save"></i> {{localize "HYPEMUSIC.SaveButton"}}
+    </button>
+    <button type="button" name="cancel">
+      <i class="fas fa-times"></i> {{localize "HYPEMUSIC.CancelButton"}}
+    </button>
+  </footer>
+</form>

@@ -1,0 +1,17 @@
+{
+  "HYPEMUSIC": {
+    "ButtonTitle": "Hype Music",
+    "ConfigTitle": "Configure Hype Music",
+    "NoTrack": "No Track Selected",
+    "SelectTrack": "Select Track",
+    "ClearTrack": "Clear Track",
+    "ActorLabel": "Actor",
+    "TrackLabel": "Hype Track",
+    "SaveButton": "Save Configuration",
+    "CancelButton": "Cancel",
+    "SettingName": "Enable Hype Music",
+    "SettingHint": "Enable or disable automatic hype music playback during combat turns.",
+    "VolumeSettingName": "Hype Music Volume",
+    "VolumeSettingHint": "Set the volume level for hype music tracks (0-100)."
+  }
+}

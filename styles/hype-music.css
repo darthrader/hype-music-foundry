@@ -1,0 +1,146 @@
+/* Hype Music Foundry Styles */
+
+.hype-music-config {
+  padding: 0.5rem;
+}
+
+.hype-music-config .notes {
+  background: rgba(0, 0, 0, 0.1);
+  border-left: 3px solid var(--color-border-highlight-alt);
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.hype-music-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+
+.hype-music-table thead {
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 2px solid var(--color-border-dark);
+}
+
+.hype-music-table th {
+  padding: 0.5rem;
+  text-align: left;
+  font-weight: bold;
+}
+
+.hype-music-table td {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--color-border-light-tertiary);
+  vertical-align: middle;
+}
+
+.hype-music-table .actor-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hype-music-table .actor-info img {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  border: 1px solid var(--color-border-dark);
+  object-fit: cover;
+}
+
+.hype-music-table .track-select {
+  width: 100%;
+  padding: 0.25rem;
+}
+
+.hype-music-table .actions {
+  display: flex;
+  gap: 0.25rem;
+  justify-content: flex-start;
+  min-width: 80px;
+}
+
+.hype-music-table .actions button {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--color-border-dark);
+  background: var(--color-bg-btn);
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.2s;
+}
+
+.hype-music-table .actions button:hover {
+  background: var(--color-bg-btn-hover);
+  box-shadow: 0 0 5px var(--color-shadow-primary);
+}
+
+.hype-music-table .play-preview {
+  color: #4CAF50;
+}
+
+.hype-music-table .clear-track {
+  color: #f44336;
+}
+
+.hype-music-config footer.sheet-footer {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--color-border-light-tertiary);
+}
+
+.hype-music-config footer button {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--color-border-dark);
+  background: var(--color-bg-btn);
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.2s;
+}
+
+.hype-music-config footer button:hover {
+  background: var(--color-bg-btn-hover);
+  box-shadow: 0 0 5px var(--color-shadow-primary);
+}
+
+.hype-music-config footer button[type="submit"] {
+  background: var(--color-border-highlight-alt);
+  color: white;
+}
+
+.hype-music-config .notification {
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.hype-music-config .notification.warning {
+  background: rgba(255, 152, 0, 0.2);
+  border: 1px solid #ff9800;
+}
+
+/* Actor Sheet Button */
+.hype-music-button {
+  flex: 0;
+  margin-left: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--color-border-dark);
+  background: var(--color-bg-btn);
+  cursor: pointer;
+  border-radius: 3px;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.hype-music-button:hover {
+  background: var(--color-bg-btn-hover);
+  box-shadow: 0 0 5px var(--color-shadow-primary);
+  text-shadow: 0 0 8px var(--color-shadow-primary);
+}
+
+.hype-music-button i {
+  margin-right: 0.25rem;
+}
