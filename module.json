@@ -2,7 +2,7 @@
   "id": "hype-music-foundry",
   "title": "Hype Music Foundry",
   "description": "A module that plays custom hype music tracks when a player's turn begins in combat.",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "authors": [
     {
       "name": "Your Name"
