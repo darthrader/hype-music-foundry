@@ -23,7 +23,7 @@
             <select name="track-{{this.id}}" class="track-select">
               <option value="">{{localize "HYPEMUSIC.NoTrack"}}</option>
               {{#each ../tracks}}
-                <option value='{"id":"{{this.id}}","name":"{{this.name}}","path":"{{this.path}}","playlistId":"{{this.playlistId}}"}' 
+                <option value="{{{json this}}}" 
                   {{#if (eq this.id ../../hypeTrack.id)}}selected{{/if}}>
                   {{this.name}}
                 </option>

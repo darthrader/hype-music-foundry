@@ -57,11 +57,17 @@ class HypeMusicConfig extends FormApplication {
 
     html.find(".play-preview").click(async (event) => {
       event.preventDefault();
-      const select = $(event.currentTarget).siblings("select");
+      const select = $(event.currentTarget).closest("tr").find("select");
       const trackData = select.val();
       if (trackData) {
-        const data = JSON.parse(trackData);
-        HypeMusicFoundry.playTrack(data);
+        try {
+          const data = JSON.parse(trackData);
+          await HypeMusicFoundry.playTrack(data);
+        } catch (e) {
+          ui.notifications.error("Failed to parse track data for preview.");
+        }
+      } else {
+        ui.notifications.warn("No track selected to preview.");
       }
     });
   }
@@ -71,14 +77,19 @@ class HypeMusicConfig extends FormApplication {
       if (key.startsWith("track-")) {
         const actorId = key.replace("track-", "");
         const actor = game.actors.get(actorId);
-        
-        if (actor && value) {
-          const trackData = JSON.parse(value);
-          await actor.setFlag("hype-music-foundry", "hypeTrack", trackData);
+        if (!actor) continue;
+        if (value) {
+          try {
+            const trackData = JSON.parse(value);
+            await actor.setFlag("hype-music-foundry", "hypeTrack", trackData);
+          } catch (e) {
+            ui.notifications.error("Failed to save hype track for " + actor.name);
+          }
+        } else {
+          await actor.unsetFlag("hype-music-foundry", "hypeTrack");
         }
       }
     }
-
     ui.notifications.info("Hype music configuration saved!");
   }
 }
@@ -92,28 +103,42 @@ class HypeMusicFoundry {
 
     // Stop currently playing hype track if any
     if (this.currentlyPlaying) {
-      await this.currentlyPlaying.sound.update({ playing: false, pausedTime: 0 });
+      try {
+        await this.currentlyPlaying.sound.update({ playing: false, pausedTime: 0 });
+      } catch (e) {}
       this.currentlyPlaying = null;
     }
 
-    // Find the playlist and sound
-    const playlist = game.playlists.get(trackData.playlistId);
+    // Find the playlist and sound (v13+ API safe)
+    const playlist = game.playlists.get(trackData.playlistId) || game.playlists.contents.find(p => p.id === trackData.playlistId);
     if (!playlist) {
-      console.warn("Hype Music Foundry: Playlist not found");
+      ui.notifications.warn("Hype Music Foundry: Playlist not found");
       return;
     }
 
-    const sound = playlist.sounds.get(trackData.id);
+    let sound = null;
+    if (playlist.sounds instanceof Map || typeof playlist.sounds.get === "function") {
+      sound = playlist.sounds.get(trackData.id);
+    } else if (Array.isArray(playlist.sounds)) {
+      sound = playlist.sounds.find(s => s.id === trackData.id);
+    }
     if (!sound) {
-      console.warn("Hype Music Foundry: Sound not found");
+      ui.notifications.warn("Hype Music Foundry: Sound not found");
       return;
     }
 
     // Get volume setting
     const volume = game.settings.get(this.MODULE_ID, "volume") / 100;
 
-    // Play the track
-    await playlist.playSound(sound, { volume: volume });
+    // Play the track (v13+ API safe)
+    if (typeof playlist.playSound === "function") {
+      await playlist.playSound(sound, { volume });
+    } else if (typeof sound.play === "function") {
+      await sound.play({ volume });
+    } else {
+      ui.notifications.error("Hype Music Foundry: Unable to play sound (API mismatch)");
+      return;
+    }
     this.currentlyPlaying = { playlist, sound };
   }
 
