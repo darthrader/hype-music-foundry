@@ -23,14 +23,7 @@ jobs:
           VERSION=${RAW_TAG#v}
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "raw_tag=$RAW_TAG" >> $GITHUB_OUTPUT
-
-      - name: Update module.json (in workspace copy)
-        run: |
-          VERSION='${{ steps.vars.outputs.version }}'
-          sed -i "s|\"version\":.*|\"version\": \"$VERSION\",|" module.json
-          sed -i "s|\"download\":.*|\"download\": \"https://github.com/${{ github.repository }}/releases/download/${{ steps.vars.outputs.raw_tag }}/module.zip\",|" module.json
-          sed -i "s|\"manifest\":.*|\"manifest\": \"https://github.com/${{ github.repository }}/releases/download/${{ steps.vars.outputs.raw_tag }}/module.json\"|" module.json
-          cat module.json
+      # We rely on the committed module.json; no in-place sed rewriting to avoid JSON corruption.
 
       - name: Create distributable zip
         run: zip -r module.zip lang/ scripts/ styles/ templates/ module.json README.md LICENSE
