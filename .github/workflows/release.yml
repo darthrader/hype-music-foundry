@@ -1,41 +1,55 @@
 name: Release Creation
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - '*'  # Any tag will trigger (e.g. 1.0.1 or v1.0.1)
+
+permissions:
+  contents: write
 
 jobs:
-  build:
+  build-and-release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Update module.json with release info
+      - name: Derive version from tag
+        id: vars
         run: |
-          VERSION=${GITHUB_REF#refs/tags/}
+          RAW_TAG="${GITHUB_REF#refs/tags/}"
+          # Strip leading v if present for numeric version
+          VERSION=${RAW_TAG#v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "raw_tag=$RAW_TAG" >> $GITHUB_OUTPUT
+
+      - name: Update module.json (in workspace copy)
+        run: |
+          VERSION='${{ steps.vars.outputs.version }}'
           sed -i "s|\"version\":.*|\"version\": \"$VERSION\",|" module.json
-          sed -i "s|\"download\":.*|\"download\": \"https://github.com/${{ github.repository }}/releases/download/$VERSION/module.zip\",|" module.json
-          sed -i "s|\"manifest\":.*|\"manifest\": \"https://github.com/${{ github.repository }}/releases/download/$VERSION/module.json\"|" module.json
+          sed -i "s|\"download\":.*|\"download\": \"https://github.com/${{ github.repository }}/releases/download/${{ steps.vars.outputs.raw_tag }}/module.zip\",|" module.json
+          sed -i "s|\"manifest\":.*|\"manifest\": \"https://github.com/${{ github.repository }}/releases/download/${{ steps.vars.outputs.raw_tag }}/module.json\"|" module.json
+          cat module.json
 
-      - name: Create module zip
-        run: zip -r module.zip lang/ scripts/ styles/ templates/ module.json README.md
+      - name: Create distributable zip
+        run: zip -r module.zip lang/ scripts/ styles/ templates/ module.json README.md LICENSE
 
-      - name: Upload module.json to release
-        uses: actions/upload-release-asset@v1
+      - name: Commit updated module.json (optional sync)
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          if git diff --quiet module.json; then echo "No changes to commit."; else git add module.json; git commit -m "chore: bump version to ${{ steps.vars.outputs.version }}"; git push; fi
+
+      - name: Create GitHub Release with assets
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Release ${{ steps.vars.outputs.raw_tag }}"
+          tag_name: "${{ steps.vars.outputs.raw_tag }}"
+          draft: false
+          prerelease: false
+          files: |
+            module.json
+            module.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./module.json
-          asset_name: module.json
-          asset_content_type: application/json
-
-      - name: Upload module.zip to release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./module.zip
-          asset_name: module.zip
-          asset_content_type: application/zip
